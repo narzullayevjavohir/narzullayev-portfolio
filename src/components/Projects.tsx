@@ -1,21 +1,26 @@
 import { useRef, useEffect } from "react";
 import gsap from "gsap";
+import { FaGithub, FaReact, FaNodeJs } from "react-icons/fa";
+import { RiTailwindCssFill } from "react-icons/ri";
 
 const projects = [
   {
     name: "Furniro",
     desc: "Modern Furniture Ecommerce Website",
     tech: "React, Zustand, Tailwind",
+    icons: [<FaReact key="r" />, <FaGithub key="g" />, <RiTailwindCssFill />],
   },
   {
     name: "Todo App",
     desc: "Simple task manager app",
     tech: "React, Zustand, LocalStorage",
+    icons: [<FaReact key="r" />, <FaNodeJs key="n" />, <RiTailwindCssFill />],
   },
   {
     name: "Portfolio 3D",
     desc: "3D Interactive Portfolio",
     tech: "React Three Fiber",
+    icons: [<FaReact key="r" />, <FaGithub key="g" />, <RiTailwindCssFill />],
   },
 ];
 
@@ -55,7 +60,7 @@ export default function Projects() {
   return (
     <div
       ref={projectsRef}
-      className="grid grid-cols-1 md:grid-cols-3 gap-6 p-10 max-w-6xl"
+      className="grid grid-cols-1 md:grid-cols-3 gap-6 p-10 max-w-6xl mx-auto"
     >
       {projects.map((proj, i) => (
         <div
@@ -64,7 +69,16 @@ export default function Projects() {
         >
           <h3 className="text-2xl font-semibold mb-2">{proj.name}</h3>
           <p className="text-gray-400 mb-3">{proj.desc}</p>
-          <p className="text-sm text-teal-400">{proj.tech}</p>
+          <p className="text-sm text-teal-400 mb-4">{proj.tech}</p>
+
+          {/* Icons */}
+          <div className="flex gap-3">
+            {proj.icons.map((icon, idx) => (
+              <div key={idx} className="w-6 h-6 text-white">
+                {icon}
+              </div>
+            ))}
+          </div>
         </div>
       ))}
     </div>

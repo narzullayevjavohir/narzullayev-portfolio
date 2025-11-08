@@ -1,68 +1,102 @@
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function About() {
-  const sectionRef = useRef<HTMLDivElement>(null);
+  const container = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const textRef = useRef<HTMLParagraphElement>(null);
+  const imageRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!sectionRef.current || !headingRef.current || !textRef.current) return;
+  useGSAP(
+    () => {
+      if (
+        !container.current ||
+        !headingRef.current ||
+        !textRef.current ||
+        !imageRef.current
+      )
+        return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const tl = gsap.timeline();
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: container.current,
+          start: "top 80%", // container top reaches 80% of viewport
+        },
+      });
 
-            // Animate the entire section
-            tl.to(sectionRef.current, {
-              duration: 1,
-              opacity: 1,
-              y: 0,
-              ease: "power3.out",
-            });
+      // Heading: left to right
+      tl.from(headingRef.current, {
+        x: -100,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power3.out",
+      });
 
-            // Stagger animation for heading and text
-            tl.fromTo(
-              [headingRef.current, textRef.current],
-              { y: 50, opacity: 0 },
-              {
-                duration: 0.8,
-                y: 0,
-                opacity: 1,
-                stagger: 0.3,
-                ease: "back.out(1.7)",
-              },
-              "-=0.5"
-            );
-          }
-        });
-      },
-      { threshold: 0.2 }
-    );
+      // Text: right to left
+      tl.from(
+        textRef.current,
+        {
+          x: 100,
+          opacity: 0,
+          duration: 0.8,
+          ease: "power3.out",
+        },
+        "-=0.5"
+      );
 
-    observer.observe(sectionRef.current);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
+      // Image: bottom to top
+      tl.from(
+        imageRef.current,
+        {
+          y: 50,
+          opacity: 0,
+          scale: 0.8,
+          duration: 1,
+          ease: "power4.out",
+        },
+        "-=0.6"
+      );
+    },
+    { scope: container }
+  );
 
   return (
-    <div
-      ref={sectionRef}
-      className="max-w-2xl text-center p-6 opacity-0 translate-y-[100px]"
+    <section
+      ref={container}
+      className="flex flex-col md:flex-row items-center justify-center gap-10 max-w-6xl mx-auto p-6"
     >
-      <h2 ref={headingRef} className="text-4xl font-semibold mb-4">
-        About Me
-      </h2>
-      <p ref={textRef} className="text-gray-400">
-        I'm a passionate Frontend Developer who loves building immersive web
-        experiences using React, Three.js, and modern tools like Zustand and
-        Framer Motion. I enjoy creating clean UI and smooth animations that
-        bring interfaces to life.
-      </p>
-    </div>
+      {/* --- Text Content --- */}
+      <div className="flex-1 text-center md:text-left space-y-6">
+        <h2
+          ref={headingRef}
+          className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-500 text-transparent bg-clip-text"
+        >
+          About Me
+        </h2>
+        <p ref={textRef} className="text-gray-400 text-lg leading-relaxed">
+          I'm a passionate Frontend Developer who loves building immersive web
+          experiences using React, Three.js, and modern tools like Zustand and
+          Framer Motion. I enjoy creating clean UI and smooth animations that
+          bring interfaces to life.
+        </p>
+      </div>
+
+      {/* --- Image --- */}
+      <div
+        ref={imageRef}
+        className="flex-1 relative w-140 h-140 rounded-xl overflow-hidden shadow-2xl border-4 border-gray-800"
+      >
+        <img
+          src="/3d_about_picture.jpg"
+          alt="3D About Illustration"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 rounded-xl bg-gradient-to-tr from-purple-500 via-indigo-500 to-pink-500 opacity-20 blur-2xl"></div>
+      </div>
+    </section>
   );
 }
